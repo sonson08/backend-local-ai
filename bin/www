@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const app = require('../app');
+const config = require('../config');
+const ollamaService = require('../services/ollamaService');
 const debug = require('debug')('hackathon-backend:server');
 const http = require('http');
 
@@ -53,6 +55,10 @@ const onListening = () => {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+
+  ollamaService.warmUp()
+    .then(() => console.log(`Local AI ready: ${config.ollamaModel}`))
+    .catch((error) => console.warn(`Local AI warm-up failed (${error.message}); scans will report ai.status "unavailable" until Ollama is running`));
 };
 
 const shutdown = (signal) => {
